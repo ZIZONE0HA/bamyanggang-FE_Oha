@@ -10,6 +10,8 @@ import Header from"../../layouts/Header";
 import SubBanner from "../../layouts/SubBanner";
 
 // *** 아이디 값 불러오기 ***
+const userIdToken = JSON.parse(localStorage.getItem('user')).userId;
+console.log(userIdToken)
 
 function GameSearch(){
 
@@ -17,14 +19,18 @@ function GameSearch(){
     const[roomList, setRoomList] = useState([]);
 
     useEffect(() => {
-        axios.get('getRoomList')
+        const fetchGameList = async () => {
+        axios.get('http://localhost:80/getRoomList')
             .then(response => {
-                setRoomList(response.data);
+                setRoomList(response.data["방 목록"]);
             })
-            .catch(error => {
-                console.error('Error get game:', error);
-            });
-    }, []);
+            // 10 후에 다시 실행하도록 설정
+            setTimeout(fetchGameList, 10000); // 
+        };
+    
+        // 처음에 한 번 실행하고, 그 후에는 주기적으로 실행됨
+        fetchGameList();
+    }, [roomList]); // roomNo나 pageState가 변경될 때마다 Effect가 재실행됨
 
     
     //Modal 상태에 대해
@@ -74,6 +80,7 @@ function GameSearch(){
                     <Modal
                         isOpen={isModalOpen} 
                         onClose={ModalOpenState}
+                        userIdToken={userIdToken}
                     />
                 </div>
                 <div className="onlyWatingButton">
@@ -103,10 +110,12 @@ function GameSearch(){
                             {room.roomSt ===0? 
                                 <NormalRoom
                                 roomList={room}
+                                userIdToken={userIdToken}
                                 />
                             : 
                                 <PrivateRoom   
                                 roomList={room}
+                                userIdToken={userIdToken}
                                 />
                             }
                         </div>
@@ -130,39 +139,8 @@ function GameSearch(){
                         ))
                     )
                 ):
-                (watingButton===0?
-                    (roomList
-                        .map(room=>(
-                            <div key={room.roomNo} className="roomComponent"> 
-                                {room.roomSt ===0? 
-                                    <NormalRoom
-                                    roomList={room}
-                                    />
-                                : 
-                                    <PrivateRoom   
-                                    roomList={room}
-                                    />
-                                }   
-                            </div>
-                        ))
-                    )
-                    :(roomList
-                        .filter((room)=>room.isOnGame===0)
-                        .map(room=>(
-                            <div key={room.roomNo} className="roomComponent"> 
-                                {room.roomSt ===0? 
-                                    <NormalRoom
-                                    roomList={room}
-                                    />
-                                : 
-                                    <PrivateRoom   
-                                    roomList={room}
-                                    />
-                                }   
-                            </div>
-                        ))
-                    )
-                )}
+                <div>방이 없습니다 ! 새로운 게임을 시작해보세요!</div>
+            }
             </div>
         </div>
         </>
