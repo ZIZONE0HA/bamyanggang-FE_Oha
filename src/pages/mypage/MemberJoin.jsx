@@ -71,13 +71,13 @@ const navigate = useNavigate();
   const handleCheckIdAvailability = async () => {
     try {
 
-      const response = await axios.post('/checkIdAvailability/idCheck', userId); 
+      const response = await axios.get(`/api/checkIdAvailability/idCheck/${userId}`);
+       
 
     console.log('응답 값:', response.data);
     setIsIdAvailable(response.data);
 
-      console.log('응답 값:', response.data);
-      setIsIdAvailable(response.data);
+    
   
       // 중복 확인 결과에 따라 메시지를 표시합니다.
       if (response.data === 0) {
@@ -91,9 +91,10 @@ const navigate = useNavigate();
   };
 // email 유효성 검사
   const handleCheckEmailAvailability = async () => {
+
     try {
 
-      const response = await axios.post('/checkIdAvailability/emailCheck', emailNum1); 
+      const response = await axios.get(`/api/checkIdAvailability/emailCheck/${emailNum1}` ); 
 
     console.log('응답 값:', response.data);
     setIsIdAvailable(response.data);
@@ -114,7 +115,7 @@ const navigate = useNavigate();
 // nickname 유효성 검사.
   const handleCheckNickNameAvailability = async () => {
     try {
-      const response = await axios.post('/checkIdAvailability/nickNameCheck', nickName); 
+      const response = await axios.get(`/api/checkIdAvailability/nickNameCheck/${nickName}` ); 
 
     console.log('응답 값:', response.data);
     setIsIdAvailable(response.data);
@@ -137,9 +138,13 @@ const navigate = useNavigate();
   const handleCheckPhoneNumAvailability = async () => {
     try {
 
-      const response = await axios.post('/checkIdAvailability/phoneNumCheck', [phoneNum1, phoneNum2, phoneNum3]
-
-      );
+      const response = await axios.get(`/api/checkIdAvailability/phoneNumCheck`, {
+        params: {
+          phoneNum1: phoneNum1,
+          phoneNum2: phoneNum2,
+          phoneNum3: phoneNum3
+        }
+      });
     console.log('응답 값:', response.data);
     setIsIdAvailable(response.data);
 
@@ -174,7 +179,7 @@ const navigate = useNavigate();
     };
 
     try {
-      const response1 = await axios.post('/addmember', userInfo, {
+      const response1 = await axios.post('/api/addmember', userInfo, {
 
         headers: {
           'Content-Type': 'application/json'
@@ -186,7 +191,7 @@ const navigate = useNavigate();
         const formData = new FormData();
         formData.append('profileImage', profileImage);
 
-        const response2 = await axios.post('/addmember/image', formData);
+        const response2 = await axios.post('/api/addmember/image', formData);
 
         
         if (response1.status === 200 && response2.status === 200) {
